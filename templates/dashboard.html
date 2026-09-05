@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POS Dashboard</title>
+<style>
+:root{
+  --red:#e50914;
+  --bg:#f5f5f5;
+  --card:#fff;
+  --text:#222;
+  --muted:#777;
+  --border:#ddd;
+}
+.dark{
+  --bg:#151515;
+  --card:#202020;
+  --text:#fff;
+  --muted:#aaa;
+  --border:#333;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+.sidebar{
+  position:fixed;
+  width:220px;
+  height:100vh;
+  background:var(--card);
+  border-right:1px solid var(--border);
+  padding:20px;
+}
+.logo{
+  font-size:22px;
+  font-weight:bold;
+  color:var(--red);
+  margin-bottom:30px;
+}
+.nav button{
+  width:100%;
+  border:0;
+  background:none;
+  color:var(--text);
+  padding:12px;
+  text-align:left;
+  border-radius:7px;
+  margin-bottom:5px;
+  cursor:pointer;
+}
+.nav button:hover,.nav button.active{
+  background:var(--red);
+  color:white;
+}
+.main{
+  margin-left:220px;
+  padding:25px;
+}
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:25px;
+}
+h1{margin:0;font-size:25px}
+button{
+  cursor:pointer;
+}
+.theme{
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+  padding:9px 12px;
+  border-radius:7px;
+}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:15px;
+  margin-bottom:20px;
+}
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:18px;
+}
+.stat-title{color:var(--muted);font-size:13px}
+.stat-number{font-size:25px;font-weight:bold;margin-top:8px}
+.products{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:18px;
+}
+.product-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:15px;
+}
+.add{
+  border:0;
+  background:var(--red);
+  color:white;
+  padding:9px 13px;
+  border-radius:7px;
+}
+.search{
+  width:100%;
+  padding:10px;
+  margin-bottom:15px;
+  border:1px solid var(--border);
+  background:var(--bg);
+  color:var(--text);
+  border-radius:7px;
+}
+table{width:100%;border-collapse:collapse}
+th,td{
+  padding:12px 8px;
+  border-bottom:1px solid var(--border);
+  text-align:left;
+  font-size:14px;
+}
+th{color:var(--muted)}
+.edit,.delete{
+  padding:6px 9px;
+  border:1px solid var(--border);
+  border-radius:5px;
+  background:var(--card);
+  color:var(--text);
+}
+.delete{color:var(--red)}
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:#0008;
+  align-items:center;
+  justify-content:center;
+}
+.modal.show{display:flex}
+.modal-box{
+  width:400px;
+  max-width:90%;
+  background:var(--card);
+  padding:20px;
+  border-radius:10px;
+}
+.modal-box input{
+  width:100%;
+  padding:10px;
+  margin:7px 0 12px;
+  border:1px solid var(--border);
+  background:var(--bg);
+  color:var(--text);
+  border-radius:6px;
+}
+.modal-actions{text-align:right}
+@media(max-width:800px){
+  .sidebar{width:170px}
+  .main{margin-left:170px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:600px){
+  .sidebar{display:none}
+  .main{margin-left:0}
+  .stats{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+<aside class="sidebar">
+  <div class="logo">🔴 POS SHOP</div>
+  <div class="nav">
+    <button class="active">Dashboard</button>
+    <button>Produk</button>
+    <button>Pesanan</button>
+    <button>Pelanggan</button>
+    <button>Laporan</button>
+    <button>Pengaturan</button>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="header">
+    <div>
+      <h1>Dashboard</h1>
+      <small style="color:var(--muted)">Selamat datang kembali, Admin.</small>
+    </div>
+    <button class="theme" onclick="toggleTheme()">🌙 / ☀️</button>
+  </div>
+
+  <div class="stats">
+    <div class="card">
+      <div class="stat-title">Total Produk</div>
+      <div class="stat-number" id="total">5</div>
+    </div>
+    <div class="card">
+      <div class="stat-title">Pesanan Hari Ini</div>
+      <div class="stat-number">24</div>
+    </div>
+    <div class="card">
+      <div class="stat-title">Penjualan</div>
+      <div class="stat-number">Rp 4,2jt</div>
+    </div>
+    <div class="card">
+      <div class="stat-title">Stok Menipis</div>
+      <div class="stat-number">3</div>
+    </div>
+  </div>
+
+  <div class="products">
+    <div class="product-header">
+      <h2>Produk</h2>
+      <button class="add" onclick="openModal()">+ Tambah</button>
+    </div>
+
+    <input class="search" id="search" placeholder="Cari produk..." oninput="render()">
+
+    <table>
+      <thead>
+        <tr>
+          <th>Nama</th>
+          <th>SKU</th>
+          <th>Harga</th>
+          <th>Stok</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="list"></tbody>
+    </table>
+  </div>
+</main>
+
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <h2>Tambah Produk</h2>
+
+    <label>Nama Produk</label>
+    <input id="name" placeholder="Nama produk">
+
+    <label>SKU</label>
+    <input id="sku" placeholder="SKU-001">
+
+    <label>Harga</label>
+    <input id="price" type="number" placeholder="100000">
+
+    <label>Stok</label>
+    <input id="stock" type="number" placeholder="10">
+
+    <div class="modal-actions">
+      <button class="theme" onclick="closeModal()">Batal</button>
+      <button class="add" onclick="addProduct()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let products=[
+  {name:"Kaos Basic",sku:"KSB-001",price:149000,stock:20},
+  {name:"Hoodie Merah",sku:"HDR-002",price:299000,stock:8},
+  {name:"Tumbler",sku:"TMB-003",price:89000,stock:15},
+  {name:"Tas Selempang",sku:"TSL-004",price:179000,stock:4},
+  {name:"Sneakers",sku:"SNK-005",price:459000,stock:12}
+];
+
+function formatRupiah(number){
+  return "Rp "+number.toLocaleString("id-ID");
+}
+
+function render(){
+  let search=document.getElementById("search").value.toLowerCase();
+
+  let result=products.filter(p =>
+    p.name.toLowerCase().includes(search) ||
+    p.sku.toLowerCase().includes(search)
+  );
+
+  document.getElementById("list").innerHTML=result.map((p,i)=>`
+    <tr>
+      <td>${p.name}</td>
+      <td>${p.sku}</td>
+      <td>${formatRupiah(p.price)}</td>
+      <td>${p.stock}</td>
+      <td>
+        <button class="edit" onclick="editProduct(${i})">Edit</button>
+        <button class="delete" onclick="deleteProduct(${i})">Hapus</button>
+      </td>
+    </tr>
+  `).join("");
+
+  document.getElementById("total").textContent=products.length;
+}
+
+function openModal(){
+  document.getElementById("modal").classList.add("show");
+}
+
+function closeModal(){
+  document.getElementById("modal").classList.remove("show");
+}
+
+function addProduct(){
+  let name=document.getElementById("name").value;
+  let sku=document.getElementById("sku").value;
+  let price=Number(document.getElementById("price").value);
+  let stock=Number(document.getElementById("stock").value);
+
+  if(!name || !sku || !price){
+    alert("Lengkapi data produk.");
+    return;
+  }
+
+  products.push({name,sku,price,stock});
+  render();
+  closeModal();
+
+  document.getElementById("name").value="";
+  document.getElementById("sku").value="";
+  document.getElementById("price").value="";
+  document.getElementById("stock").value="";
+}
+
+function editProduct(i){
+  let name=prompt("Nama produk:",products[i].name);
+  if(name===null)return;
+
+  let price=prompt("Harga:",products[i].price);
+  if(price===null)return;
+
+  let stock=prompt("Stok:",products[i].stock);
+  if(stock===null)return;
+
+  products[i].name=name;
+  products[i].price=Number(price);
+  products[i].stock=Number(stock);
+  render();
+}
+
+function deleteProduct(i){
+  if(confirm("Hapus produk ini?")){
+    products.splice(i,1);
+    render();
+  }
+}
+
+function toggleTheme(){
+  document.body.classList.toggle("dark");
+}
+
+render();
+</script>
+</body>
+</html>
